@@ -76,5 +76,5 @@ class MainMenu(Screen):
         if loadh:
             pass
         if newh:
-            # game.Game.create()
+            game.create()
             pass
