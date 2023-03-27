@@ -1,13 +1,14 @@
-import constants
-import screens
+running = True
+screen = None
+pygame = None
+currentscreen = None
 
-class Game:
-    def __init__(self, pygame, screen):
-        self.screen = screen
-        self.pygame = pygame
-        self.currentScreen = screens.MainMenu(pygame, screen)
-        self.currentScreen.init()
+def stop():
+    global running
+    running = False
 
-    def update(self, delta):
-        self.currentScreen.update(delta=delta)
+def update(delta):
+    currentscreen.update(delta=delta)
 
+def click(x, y):
+    currentscreen.onclick(x, y)
