@@ -1,3 +1,6 @@
+import player
+import screens
+
 running = True
 screen = None
 pygame = None
@@ -18,4 +21,25 @@ def click(x, y):
 
 
 def create():
-    pass  # TODO create game
+    global currentscreen
+    # put loading screen
+    old = currentscreen
+    currentscreen = screens.Loading()
+    old.deinit()
+    # create a new game
+    player.load_map()
+
+    player.user = {}
+    player.user["pos"] = (1, 1)
+
+    # save it
+    player.save()
+
+    old = currentscreen
+    gamescreen = screens.Game()
+    currentscreen = gamescreen
+    old.deinit()
+
+
+def load_game(filename):
+    pass # TODO load a game into memory from binary file

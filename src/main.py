@@ -15,7 +15,6 @@ w, h = screen.get_size()
 game.pygame = pygame
 game.screen = screen
 game.currentscreen = screens.MainMenu()
-game.currentscreen.init()
 
 
 last = time.time_ns()

@@ -1,18 +1,16 @@
 from abc import ABC, abstractmethod
 import tiling
 import game
+import player
+import constants
 
 
 class Screen(ABC):
-    def __int__(self):
+    def __init__(self):
         pass
 
     @abstractmethod
     def update(self, delta):
-        pass
-
-    @abstractmethod
-    def init(self):
         pass
 
     @abstractmethod
@@ -26,11 +24,19 @@ class Screen(ABC):
 
 class MainMenu(Screen):
     def __init__(self):
-        self.splash = None
-        self.buttonmap = None
         self.buttonSpacing = 20
         self.buttonWidth = 74
         self.buttonHeight = 58
+        self.splash = game.pygame.image.load('assets/splash.png')
+        self.buttonmap = tiling.Tilemap(game.pygame, 'assets/textures/TitleButtons.png')
+        self.buttonmap.addTile("new_idle", (0, 187, 74, 58))
+        self.buttonmap.addTile("new_hover", (0, 245, 74, 58))
+
+        self.buttonmap.addTile("load_idle", (74, 187, 74, 58))
+        self.buttonmap.addTile("load_hover", (74, 245, 74, 58))
+
+        self.buttonmap.addTile("exit_idle", (222, 187, 74, 58))
+        self.buttonmap.addTile("exit_hover", (222, 245, 74, 58))
 
     def get_buttons_position(self):
         return ((game.screen.get_size()[0] / 2 - self.buttonWidth*1.5 - self.buttonSpacing, 30 * 2 + 500),
@@ -48,19 +54,6 @@ class MainMenu(Screen):
         game.screen.blit(self.buttonmap.get("load_idle" if not loadh else "load_hover"), load)
         game.screen.blit(self.buttonmap.get("exit_idle" if not exith else "exit_hover"), exitb)
 
-
-    def init(self):
-        self.splash = game.pygame.image.load('assets/splash.png')
-        self.buttonmap = tiling.Tilemap(game.pygame, 'assets/textures/TitleButtons.png')
-        self.buttonmap.addTile("new_idle", (0, 187, 74, 58))
-        self.buttonmap.addTile("new_hover", (0, 245, 74, 58))
-
-        self.buttonmap.addTile("load_idle", (74, 187, 74, 58))
-        self.buttonmap.addTile("load_hover", (74, 245, 74, 58))
-
-        self.buttonmap.addTile("exit_idle", (222, 187, 74, 58))
-        self.buttonmap.addTile("exit_hover", (222, 245, 74, 58))
-
     def deinit(self):
         del self.splash
         del self.buttonmap
@@ -77,4 +70,38 @@ class MainMenu(Screen):
             pass
         if newh:
             game.create()
-            pass
+
+
+class Loading(Screen):
+    def __init__(self):
+        self.splash = game.pygame.image.load('assets/splash.png')
+
+    def update(self, delta):
+        game.screen.blit(self.splash, (game.screen.get_size()[0] / 2 - self.splash.get_width() / 2, 30))
+
+    def deinit(self):
+        del self.splash
+
+    def onclick(self, x, y):
+        pass
+
+class Game(Screen):
+    def __init__(self):
+        self.tilemap = tiling.Tilemap(game.pygame, 'assets/textures/Cursors.fr-FR.png')
+        self.tilemap.addTile("id"+str(constants.tile_grass_1), (464, 1648, 16, 16))
+
+    def update(self, delta):
+        # translate
+        sw, sh = game.screen.get_size()
+        px, py = player.user["pos"]
+        tx, ty = sw/2 - (px*constants.tile_size), sh/2 - (py*constants.tile_size)
+        for y in range(player.farm_map_size[1]):
+            for x in range(player.farm_map_size[0]):
+                print("id"+str(player.farm_map[y][x]))
+                game.screen.blit(self.tilemap.get("id"+str(player.farm_map[y][x])), (tx+x*constants.tile_size, ty+y*constants.tile_size))
+
+    def deinit(self):
+        pass
+
+    def onclick(self, x, y):
+        pass
