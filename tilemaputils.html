@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			canvas{
+				display: block;
+				margin-block-start: 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="file" id="fin"><br>
+		<input type="number" id="isx">
+		<input type="number" id="isy">
+		<input type="number" id="isw">
+		<input type="number" id="ish">
+		<input type="number" id="izoom">
+		<script>
+			const isx = document.getElementById("isx");
+			const isy = document.getElementById("isy");
+			const isw = document.getElementById("isw");
+			const ish = document.getElementById("ish");
+			const izoom = document.getElementById("izoom");
+
+			isx.addEventListener("change", updateRect);
+			isy.addEventListener("change", updateRect);
+			isw.addEventListener("change", updateRect);
+			ish.addEventListener("change", updateRect);
+			izoom.addEventListener("change", updateRect);
+
+			function updateRect(){
+				rect.x = isx.value;
+				rect.y = isy.value;
+				rect.w = isw.value;
+				rect.h = ish.value;
+				zoom = izoom.value;
+				redraw();
+			}
+
+			const canvas = document.createElement("canvas");
+			const ctx = canvas.getContext("2d");
+			document.body.appendChild(canvas);
+			// canvas.width = window.innerWidth;
+			// canvas.height = window.innerHeight;
+			const fin = document.getElementById("fin");
+			const img = document.createElement("img")
+			fin.addEventListener("change", e=>{
+				const file = fin.files[0];
+				const fr = new FileReader();
+				fr.onload = e=>{
+					console.log(fr.result);
+					img.onload = ()=>{
+						redraw();
+					}
+					img.src = fr.result;
+				}
+				fr.readAsDataURL(file)
+			});
+
+			let rect = {x:464,y:1648,w:16,h:16}
+			let zoom = 10;
+			isx.value = rect.x;
+			isy.value = rect.y;
+			isw.value = rect.w;
+			ish.value = rect.h;
+			izoom.value = zoom;
+			
+			function redraw(){
+				let scale = zoom;
+				let aw = Math.min(img.width, rect.w);
+				let ah = Math.min(img.height, rect.h);
+				/*if(aw < 100 && ah < 100){
+					scale = 10;
+				}*/
+				canvas.width = aw * scale;
+				canvas.height = ah * scale;
+				ctx.clearRect(0,0,canvas.width, canvas.height);
+				ctx.imageSmoothingEnabled = false;
+				ctx.drawImage(img, rect.x, rect.y, aw, ah, 0, 0, canvas.width, canvas.height);
+			}
+		</script>
+	</body>
+</html>
