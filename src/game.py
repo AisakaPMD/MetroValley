@@ -29,8 +29,7 @@ def create():
     # create a new game
     player.load_map()
 
-    player.user = {}
-    player.user["pos"] = (1, 1)
+    player.user = {"pos": [1, 1]}
 
     # save it
     player.save()
@@ -42,4 +41,4 @@ def create():
 
 
 def load_game(filename):
-    pass # TODO load a game into memory from binary file
+    pass  # TODO load a game into memory from binary file

@@ -39,9 +39,9 @@ class MainMenu(Screen):
         self.buttonmap.addTile("exit_hover", (222, 245, 74, 58))
 
     def get_buttons_position(self):
-        return ((game.screen.get_size()[0] / 2 - self.buttonWidth*1.5 - self.buttonSpacing, 30 * 2 + 500),
-                (game.screen.get_size()[0] / 2 - self.buttonWidth*0.5, 30 * 2 + 500),
-                (game.screen.get_size()[0] / 2 + self.buttonWidth*0.5 + self.buttonSpacing, 30 * 2 + 500))
+        return ((game.screen.get_size()[0] / 2 - self.buttonWidth * 1.5 - self.buttonSpacing, 30 * 2 + 500),
+                (game.screen.get_size()[0] / 2 - self.buttonWidth * 0.5, 30 * 2 + 500),
+                (game.screen.get_size()[0] / 2 + self.buttonWidth * 0.5 + self.buttonSpacing, 30 * 2 + 500))
 
     def update(self, delta):
         game.screen.blit(self.splash, (game.screen.get_size()[0] / 2 - self.splash.get_width() / 2, 30))
@@ -85,20 +85,67 @@ class Loading(Screen):
     def onclick(self, x, y):
         pass
 
+
 class Game(Screen):
     def __init__(self):
         self.tilemap = tiling.Tilemap(game.pygame, 'assets/textures/Cursors.fr-FR.png')
-        self.tilemap.addTile("id"+str(constants.tile_grass_1), (464, 1648, 16, 16))
+        self.tilemap2 = tiling.Tilemap(game.pygame, 'assets/textures/hoeDirt.png')
+        self.tilemap.addTile("id" + str(constants.tile_grass_1), (464, 1648, 16, 16))
+
+        # soil
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "O", (0, 0, 16, 16))
+
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "^", (0, 16, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "|", (0, 32, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "V", (0, 48, 16, 16))
+
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "[", (16, 48, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "=", (32, 48, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "]", (48, 48, 16, 16))
+
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "A", (16, 0, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "B", (32, 0, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "C", (48, 0, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "D", (16, 16, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "E", (32, 16, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "F", (48, 16, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "G", (16, 32, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "H", (32, 32, 16, 16))
+        self.tilemap2.addTile("id" + str(constants.tile_soil) + "I", (48, 32, 16, 16))
 
     def update(self, delta):
+        # update
+        if game.pygame.key.get_pressed()[game.pygame.K_d]:
+            player.user["pos"][0] += constants.player_speed * delta
+        if game.pygame.key.get_pressed()[game.pygame.K_s]:
+            player.user["pos"][1] += constants.player_speed * delta
+        if game.pygame.key.get_pressed()[game.pygame.K_a] or game.pygame.key.get_pressed()[game.pygame.K_q]:
+            player.user["pos"][0] -= constants.player_speed * delta
+        if game.pygame.key.get_pressed()[game.pygame.K_z] or game.pygame.key.get_pressed()[game.pygame.K_w]:
+            player.user["pos"][1] -= constants.player_speed * delta
+
+        # render
         # translate
         sw, sh = game.screen.get_size()
         px, py = player.user["pos"]
-        tx, ty = sw/2 - (px*constants.tile_size), sh/2 - (py*constants.tile_size)
+        tx, ty = sw / 2 - (px * constants.tile_size), sh / 2 - (py * constants.tile_size)
+        rendered = 0
+        total = 0
         for y in range(player.farm_map_size[1]):
             for x in range(player.farm_map_size[0]):
-                print("id"+str(player.farm_map[y][x]))
-                game.screen.blit(self.tilemap.get("id"+str(player.farm_map[y][x])), (tx+x*constants.tile_size, ty+y*constants.tile_size))
+                total += 1
+                x1 = tx + x * constants.tile_size
+                y1 = ty + y * constants.tile_size
+                x2 = x1 + constants.tile_size
+                y2 = y1 + constants.tile_size
+                sw, sh = game.screen.get_size()
+                if x2 > 0 and y2 > 0 and x1 < sw and y1 < sh:
+                    img = game.pygame.transform.scale(self.tilemap.get("id" + str(player.farm_map[y][x])),
+                                                      (constants.tile_size, constants.tile_size))
+                    game.screen.blit(img, (tx + x * constants.tile_size, ty + y * constants.tile_size))
+                    rendered += 1
+
+        print(f'Rendered {rendered} out of {total} tiles')
 
     def deinit(self):
         pass

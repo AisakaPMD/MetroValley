@@ -16,7 +16,6 @@ game.pygame = pygame
 game.screen = screen
 game.currentscreen = screens.MainMenu()
 
-
 last = time.time_ns()
 
 
